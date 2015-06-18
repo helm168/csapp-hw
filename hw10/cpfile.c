@@ -1,4 +1,7 @@
-#include <rio.h>
+#include "rio.h"
+#include <stdio.h>
+
+#define MAXLINE 100
 
 int main(int argc, char **argv) {
 	int n;
@@ -6,6 +9,8 @@ int main(int argc, char **argv) {
 	char buf[MAXLINE];
 
 	rio_readinitb(&rio, STDIN_FILENO);
-	while((n = rio_readlineb(&rio, buf, MAXLINE)) != 0)
+	while((n = rio_readlineb(&rio, buf, MAXLINE)) != 0) {
 		rio_writen(STDOUT_FILENO, buf, n);
+	}
+}
 	

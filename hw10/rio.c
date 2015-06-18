@@ -1,5 +1,9 @@
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include "rio.h"
 
-ssize_t rio_readn(int fd, void *usrbuf, int n) {
+ssize_t rio_readn(int fd, void *usrbuf, size_t n) {
 	int nleft, rc;
 	nleft = n;
 	char *buf = usrbuf;
@@ -20,7 +24,7 @@ ssize_t rio_readn(int fd, void *usrbuf, int n) {
 	return n-nleft;
 }
 
-ssize_t rio_writen(int fd, void *usrbuf, int n) {
+ssize_t rio_writen(int fd, void *usrbuf, size_t n) {
 	int nleft, wc;
 	nleft = n;
 	char *buf = usrbuf;
@@ -39,13 +43,13 @@ ssize_t rio_writen(int fd, void *usrbuf, int n) {
 	return n;
 }
 
-void rio_initreadb(rio_t *rp, int fd) {
+void rio_readinitb(rio_t *rp, int fd) {
 	rp->rio_fd = fd;
 	rp->rio_cnt = 0;
 	rp->rio_bufptr = rp->rio_buf;
 }
 
-static ssize_t rio_read(rio_t *rp, void *usrbuf, size_t n) {
+static ssize_t rio_readb(rio_t *rp, void *usrbuf, size_t n) {
 	int cnt;
 	
 	while(rp->rio_cnt <= 0) {
@@ -65,13 +69,13 @@ static ssize_t rio_read(rio_t *rp, void *usrbuf, size_t n) {
 	if(rp->rio_cnt < cnt) {
 		cnt = rp->rio_cnt;
 	}
-	memcopy(usrbuf, rp->rio_bufptr, cnt);
+	memcpy(usrbuf, rp->rio_bufptr, cnt);
 	rp->rio_cnt -= cnt;
-	cp->rio_bufptr += cnt;
+	rp->rio_bufptr += cnt;
 	return cnt;
 }
 
-ssize rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen) {
+ssize_t rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen) {
 	int i, rc;
 	char c;
 	char *bufp = usrbuf;
@@ -88,8 +92,9 @@ ssize rio_readlineb(rio_t *rp, void *usrbuf, size_t maxlen) {
 			} else {
 				break;
 			}
-		else {
+		} else {
 			return -1;
+		}
 	}
 	*bufp = 0;
 	return i + 1;
@@ -101,7 +106,7 @@ ssize_t rio_readnb(rio_t *rp, void *usrbuf, size_t n) {
 	char *bufp = usrbuf;
 
 	while(nleft > 0) {
-		if((rc = rio_readb(rp, bufp, nleft) < 0) {
+		if((rc = rio_readb(rp, bufp, nleft)) < 0) {
 			if(errno == EINTR) {
 				rc = 0;
 			} else {
@@ -115,5 +120,3 @@ ssize_t rio_readnb(rio_t *rp, void *usrbuf, size_t n) {
 	}
 	return n - nleft;
 }
-
-	
