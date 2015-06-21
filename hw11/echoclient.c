@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXLINE 1000
-
 int main(int argc, char **argv) {
 	int clientfd, port;
 	char *host, buf[MAXLINE];
@@ -19,6 +17,13 @@ int main(int argc, char **argv) {
 	port = atoi(argv[2]);
 
 	clientfd = open_clientfd(host, port);
+	if(clientfd == -1) {
+		printf("socket error.\n");
+		exit(0);
+	} else if(clientfd == -2){
+		printf("network error.\n");
+		exit(0);
+	}
 	rio_readinitb(&rio, clientfd);
 
 	while(fgets(buf, MAXLINE, stdin) != NULL) {
