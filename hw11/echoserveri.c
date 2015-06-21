@@ -20,6 +20,10 @@ int main(int argc, char **argv) {
 	port = atoi(argv[1]);
 
 	listenfd = open_listenfd(port);
+	if(listenfd == -1) {
+		printf("cannot listen on port:%d\n", port);
+		exit(0);
+	}
 	while(1) {
 		clientlen = sizeof(clientaddr);
 		connfd = accept(listenfd, (SA *)&clientaddr, &clientlen);
