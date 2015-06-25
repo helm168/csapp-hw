@@ -91,6 +91,7 @@ void addclient(int fd, pool *p) {
 	}
 	if(i == FD_SETSIZE) {
 		fprintf(stderr, "add client error: Too many clients");
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -99,7 +100,7 @@ void checkclients(pool *p) {
 	rio_t rio;
 	char buf[MAXLINE];
 
-	for(i = 0; (i < p->maxi) && (p->nready > 0); i++) {
+	for(i = 0; (i <= p->maxi) && (p->nready > 0); i++) {
 		fd = p->clientfd[i];
 		rio = p->clientrio[i];
 
